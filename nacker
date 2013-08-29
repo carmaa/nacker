@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+'''
+Nacker is a tool to circumvent 802.1x Network Access Control (NAC) on
+a wired LAN.
+
+Copyright (C) 2013  Carsten Maartmann-Moe
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Created on Aug 29, 2013
+
+@author: Carsten Maartmann-Moe <carsten@carmaa.com> aka ntropy
+'''
+
+from datetime import date
+from nacker import cfg, term
+import getopt
+import os
+import sys
+
+
+def banner():
+    '''
+    Print obligatory banner
+    '''
+    print('Nacker')
+    term.write('v.{0} (C) Carsten Maartmann-Moe {1}'
+               .format(cfg.version, date.today().strftime("%Y")), 
+               indent = False)
+    term.write('Download: {0} | Twitter: @breaknenter'.format(cfg.url), 
+               indent = False)
+    print()
+
+
+def main(argv):
+    cfg.encoding = sys.getdefaultencoding()
+    
+    # Get and set terminal width
+    cfg.wrapper.width = term.size()
+    
+    banner()
+    
+    # Parse args
+    try:
+        opts, args = getopt.getopt(argv[1:], 'h', ['help'])
+    except getopt.GetoptError as err:
+        term.warn(err)
+        usage(argv[0])
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ('-h', '--help'):
+            usage(argv[0])
+            sys.exit()
+        else:
+            assert False, 'Option not handled: ' + opt
+    
+    # We don't accept any other arguments
+    if args:
+        term.warn('Arguments {0} ignored'.format(', '.join(args)))
+    
+    # Main logic goes here
+    try:
+        #TODO
+    except Exception as exc:
+        term.warn('Um, something went wrong: {0}'.format(exc))
+        term.separator()
+        traceback.print_exc()
+        term.separator()
+    except KeyboardInterrupt:
+        term.warn('Aborted')
+
+
+def usage(execname):
+    print(
+'''Nacker is a tool to circumvent 802.1x Network Access Control (NAC) on a wired LAN.
+
+Usage: ''' + os.path.basename(execname) + ''' [OPTIONS]
+
+Options:
+    -h, --help:           Displays this message.''')
+
+
+if __name__ == '__main__':
+    main(sys.argv)
