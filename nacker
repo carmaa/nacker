@@ -24,30 +24,26 @@ Created on Aug 29, 2013
 '''
 
 from datetime import date
-from nacker import cfg, term
 import getopt
 import os
 import sys
+
+VERSION = '0.0.1'
+URL = 'http://github.com/carmaa/nacker'
 
 
 def banner():
     '''
     Print obligatory banner
     '''
-    print('Nacker')
-    term.write('v.{0} (C) Carsten Maartmann-Moe {1}'
-               .format(cfg.version, date.today().strftime("%Y")), 
-               indent = False)
-    term.write('Download: {0} | Twitter: @breaknenter'.format(cfg.url), 
-               indent = False)
+    print('Nacker - bypass 802.1x LAN NAC')
+    print('v{0} (C) Carsten Maartmann-Moe {1}'.format(VERSION, date.today().strftime("%Y")))
+    print('Download: {0} | Twitter: @breaknenter'.format(URL))
     print()
 
 
 def main(argv):
-    cfg.encoding = sys.getdefaultencoding()
-    
-    # Get and set terminal width
-    cfg.wrapper.width = term.size()
+    encoding = sys.getdefaultencoding()
     
     banner()
     
@@ -55,7 +51,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv[1:], 'h', ['help'])
     except getopt.GetoptError as err:
-        term.warn(err)
+        print(err)
         usage(argv[0])
         sys.exit(2)
     for opt, arg in opts:
@@ -71,19 +67,17 @@ def main(argv):
     
     # Main logic goes here
     try:
-        #TODO
+        print()#TODO
     except Exception as exc:
-        term.warn('Um, something went wrong: {0}'.format(exc))
-        term.separator()
+        print('Um, something went wrong: {0}'.format(exc))
         traceback.print_exc()
-        term.separator()
     except KeyboardInterrupt:
-        term.warn('Aborted')
+        print('Aborted')
 
 
 def usage(execname):
     print(
-'''Nacker is a tool to circumvent 802.1x Network Access Control (NAC) on a wired LAN.
+'''Nacker is a tool to bypass 802.1x Network Access Control (NAC) on a wired LAN.
 
 Usage: ''' + os.path.basename(execname) + ''' [OPTIONS]
 
