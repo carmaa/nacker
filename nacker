@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 '''
 Nacker is a tool to circumvent 802.1x Network Access Control (NAC) on
 a wired LAN.
@@ -24,6 +24,7 @@ Created on Aug 29, 2013
 '''
 
 from datetime import date
+from caravan import arp
 import getopt
 import os
 import sys
@@ -39,7 +40,7 @@ def banner():
     print('Nacker - bypass 802.1x LAN NAC')
     print('v{0} (C) Carsten Maartmann-Moe {1}'.format(VERSION, date.today().strftime("%Y")))
     print('Download: {0} | Twitter: @breaknenter'.format(URL))
-    print()
+    print('')
 
 
 def main(argv):
@@ -66,14 +67,21 @@ def main(argv):
         term.warn('Arguments {0} ignored'.format(', '.join(args)))
     
     # Main logic goes here
-    try:
-        print()#TODO
-    except Exception as exc:
-        print('Um, something went wrong: {0}'.format(exc))
-        traceback.print_exc()
-    except KeyboardInterrupt:
-        print('Aborted')
 
+    # Get interfaces, ip address and netmask
+
+    # Do an ARP ping sweep against the subnet
+    arp.pingsweep('192.168.0.0/24')
+
+    # Check if we can ping the hosts, try until exhausted
+
+    # Sort the MAC addresses based on organization, exotics first
+
+    # For each MAC address, grab it and ask for an IP
+
+        # Check IP against IP originally associated with MAC - if they are not
+        # equal, we're likely authenticated to the switch
+        
 
 def usage(execname):
     print(
