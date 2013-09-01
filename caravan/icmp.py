@@ -21,22 +21,17 @@ Created on Aug 29, 2013
 
 @author: Carsten Maartmann-Moe <carsten@carmaa.com> aka ntropy
 '''
+from scapy.all import *
 
-from scapy.all import srp,Ether,ARP,conf
-import sys
-import netaddr
-
-def pingsweep(net):
-    conf.verb=0
-
-    ans,unans=srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=str(net.cidr)),timeout=2)
-
-    hosts = []
-
-    for snd,rcv in ans:
-        mac = netaddr.EUI(rcv[Ether].src)
-        ip = rcv[ARP].psrc
-        print(mac, ip, mac.oui.registration().org)
-        hosts.append([mac, ip])
-
-    return hosts
+def ping(ip):
+    TIMEOUT = 2
+    conf.verb = 0
+    print('Pinging {0}'.format(ip))
+    packet = IP(dst=ip, ttl=20)/ICMP()
+    reply = sr1(packet, timeout=TIMEOUT)
+    if not (reply is None):
+         print reply.src, "is online"
+         return(True)
+    else:
+         print "Timeout waiting for %s" % packet[IP].src
+         return(False)

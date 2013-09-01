@@ -22,21 +22,24 @@ Created on Aug 29, 2013
 @author: Carsten Maartmann-Moe <carsten@carmaa.com> aka ntropy
 '''
 
-from scapy.all import srp,Ether,ARP,conf
-import sys
-import netaddr
+import gudev
 
-def pingsweep(net):
-    conf.verb=0
+def devices():
+    client = gudev.Client(['rfkill', 'net'])
 
-    ans,unans=srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=str(net.cidr)),timeout=2)
+    for dev in client.query_by_subsystem('net'):
+        if dev.get_sysfs_attr_as_int("type") != 1: continue
 
-    hosts = []
+        driver = dev.get_driver()
+        if not driver:
+            parent = dev.get_parent()
+            if parent:
+                driver = parent.get_driver()
 
-    for snd,rcv in ans:
-        mac = netaddr.EUI(rcv[Ether].src)
-        ip = rcv[ARP].psrc
-        print(mac, ip, mac.oui.registration().org)
-        hosts.append([mac, ip])
+        # available: wlan, wwan, wimax
+        if dev.get_devtype() == 'wlan':
+          type = 'Wireless'
+        else:
+           type = 'Wired'
 
-    return hosts
+        print type, dev.get_name(), driver, dev.get_sysfs_path()
