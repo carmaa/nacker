@@ -27,7 +27,7 @@ import time
 from scapy.all import *
 from pprint import pprint
 
-THREADS = 10
+THREADS = 3
 
 TOPPORTS = [80,     # http
             23,     # telnet
@@ -66,6 +66,8 @@ def synscan(target, portlist = Queue.Queue()):
 
     for item in threads:
         item.join()
+        #if cfg.verbose:
+        print(item.status)
 
     finished = time.time()
     print('Finished scanning in {0:5f} seconds at {1} {2}'.format((finished-started), time.ctime(finished), time.tzname[0]))
@@ -79,6 +81,7 @@ class SYNScannerThread(threading.Thread):
         self.portlist = portlist
         self.tid = tid
         self.open_ports = open_ports
+        self.status = ''
 
 
     def run(self):
@@ -88,11 +91,11 @@ class SYNScannerThread(threading.Thread):
         while True:
             port = 0
             try:
-                port = self.portlist.get(timeout=1)
+                port = self.portlist.get(timeout = 1)
             except Queue.Empty:
                 break
 
-            response = sr1(IP(dst=self.target)/TCP(dport=port, flags="S"),verbose=False, timeout=0.2)
+            response = sr1(IP(dst = self.target)/TCP(dport = port, flags = 'S'), verbose = False)
 
             if response:
                 # flags is 18 if SYN,ACK received
@@ -104,5 +107,4 @@ class SYNScannerThread(threading.Thread):
             self.portlist.task_done()
         # end while block
 
-        #if cfg.verbose:
-        print('Thread {0} scanned {1} ports'.format(self.tid, totalPorts))
+        self.status = 'Thread {0} scanned {1} ports'.format(self.tid, totalPorts)
