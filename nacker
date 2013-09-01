@@ -108,7 +108,8 @@ def main(argv):
     pprint(hosts)
 
     # Portscan subnet to see if packets are dropped (baseline)
-    baseline = tcp.synscan(subnet)
+    baseline = tcp.synscan(host[0])
+    pprint(baseline)
 
     # For each MAC address, grab it and ask for an IP
 

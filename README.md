@@ -16,6 +16,6 @@ However, there are often far easier ways to bypass NAC. As anyone that has been 
 
 So if we can figure out which hosts that are exempt authentication and mimic them on the network, we'll be exempt as well. Sweet!
 
-Nacker automates the procedure of finding exempt hosts on the local LAN, and mimicing them. It is a very simple and dumb tool, but it has the advantage of not requiring plugging in dedicated hardware between an authenticated host and the switch, which both Pwnie Plug and Marvin requires you to do.
+Nacker automates the procedure of finding exempt hosts on the local LAN, and mimicing them. It is a very simple and dumb tool, but it has the advantage of not requiring plugging in dedicated hardware between an authenticated host and the switch, which both Pwnie Plug and Marvin requires you to do. Just plug in, run Nacker, and with a little bit of luck you'll be authenticated on the network and able to enjoy network access as usual.
 
 [1]: http://www.urbandictionary.com/define.php?term=nacker
