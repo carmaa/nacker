@@ -24,7 +24,7 @@ Created on Aug 29, 2013
 '''
 
 from datetime import date
-from caravan import arp, dhcp, icmp
+from caravan import arp, dhcp, icmp, tcp
 import getopt
 import os
 import sys
@@ -90,12 +90,12 @@ def main(argv):
     #ip = socket.gethostbyname(socket.gethostname())
     interface = ip_interfaces[0]
     addresses = netifaces.ifaddresses(interface)[netifaces.AF_INET][0]
-    net = IPNetwork(addresses['addr'] + '/' + addresses['netmask'])
+    subnet = IPNetwork(addresses['addr'] + '/' + addresses['netmask'])
     print('Using interface {0} with address {1} and netmask {2}:'.format(
-        interface, net.ip, net.netmask))
+        interface, subnet.ip, subnet.netmask))
 
     # Do an ARP ping sweep against the subnet
-    hosts = arp.pingsweep(net)
+    hosts = arp.pingsweep(subnet)
 
     # Check if we can ping the hosts, try until first answer or exhausted
     for host in hosts:
@@ -107,8 +107,8 @@ def main(argv):
     hosts.sort(key=lambda host: host[1].oui.registration().org in PC_MANUFACTURERS)
     pprint(hosts)
 
-    # Portscan hosts to see if packets are dropped (baseline)
-    baseline = 
+    # Portscan subnet to see if packets are dropped (baseline)
+    baseline = tcp.synscan(subnet)
 
     # For each MAC address, grab it and ask for an IP
 
