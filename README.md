@@ -8,7 +8,7 @@ The name "Nacker" is a derived from the word "knocker" and NAC; coincidentally c
 Introduction
 ------------
 
-Increasingly often during internal pentests in modern environments, you will find that you'll not be able to just plug into the nearest Ethernet port to get access to the enterprise network. Most of the times this is because the network is protected by some sort of Network Access Control (NAC) funtionality, wich essentially forces hosts on the network to authenticate to the switch, often using the 802.1x protocol with a backend authentication server, typically RADIUS.
+Increasingly often during internal pentests in modern environments, you will find that you'll not be able to just plug into the nearest Ethernet port to get access to the enterprise network. Most of the times this is because the network is protected by some sort of Network Access Control (NAC) functionality, wich essentially forces hosts on the network to authenticate to the switch, often using the 802.1x protocol with a backend authentication server, typically RADIUS.
 
 There are several ways to circumvent this problem, for example by using an Pwnie Plug or Marvin.
 
