@@ -24,13 +24,21 @@ Created on Aug 29, 2013
 '''
 
 from datetime import date
-from caravan import arp
+from caravan import arp, dhcp, icmp
 import getopt
 import os
 import sys
+import socket
+import netifaces
+from pprint import pprint
+from netaddr import IPNetwork
 
 VERSION = '0.0.1'
 URL = 'http://github.com/carmaa/nacker'
+LOCALHOST_ADDR = ['127.0.0.1', 'localhost']
+PC_MANUFACTURERS = ['Apple', 'Lenovo', 'Dell', 'Hewlett-Packard', 
+                        'Acer' ,'ASUS', 'Fujitsu', 'Sony', 'Toshiba']
+PRINTER_MANUFACTURERS = ['Xerox', 'Lexmark', 'Rioch', 'Canon', 'Brother']
 
 
 def banner():
@@ -69,19 +77,44 @@ def main(argv):
     # Main logic goes here
 
     # Get interfaces, ip address and netmask
+    ifaces = netifaces.interfaces()
+    ip_interfaces = []
+    for i in ifaces:
+        try:
+            addresses = netifaces.ifaddresses(i)
+            if addresses[netifaces.AF_INET][0]['addr'] not in LOCALHOST_ADDR:
+                ip_interfaces.append(i)
+        except KeyError:
+            pass
+    #print(ip_interfaces)
+    #ip = socket.gethostbyname(socket.gethostname())
+    interface = ip_interfaces[0]
+    addresses = netifaces.ifaddresses(interface)[netifaces.AF_INET][0]
+    net = IPNetwork(addresses['addr'] + '/' + addresses['netmask'])
+    print('Using interface {0} with address {1} and netmask {2}:'.format(
+        interface, net.ip, net.netmask))
 
     # Do an ARP ping sweep against the subnet
-    arp.pingsweep('192.168.0.0/24')
+    hosts = arp.pingsweep(net)
 
-    # Check if we can ping the hosts, try until exhausted
+    # Check if we can ping the hosts, try until first answer or exhausted
+    for host in hosts:
+        if icmp.ping(host[0]):
+            break
 
-    # Sort the MAC addresses based on organization, exotics first
+    # Sort the MAC addresses based on organization, laptops anw workstations
+    pprint(hosts)
+    hosts.sort(key=lambda host: host[1].oui.registration().org in PC_MANUFACTURERS)
+    pprint(hosts)
+
+    # Portscan hosts to see if packets are dropped (baseline)
+    baseline = 
 
     # For each MAC address, grab it and ask for an IP
 
         # Check IP against IP originally associated with MAC - if they are not
         # equal, we're likely authenticated to the switch
-        
+
 
 def usage(execname):
     print(

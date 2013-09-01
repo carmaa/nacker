@@ -21,22 +21,3 @@ Created on Aug 29, 2013
 
 @author: Carsten Maartmann-Moe <carsten@carmaa.com> aka ntropy
 '''
-
-from scapy.all import srp,Ether,ARP,conf
-import sys
-import netaddr
-
-def pingsweep(net):
-    conf.verb=0
-
-    ans,unans=srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=str(net.cidr)),timeout=2)
-
-    hosts = []
-
-    for snd,rcv in ans:
-        mac = netaddr.EUI(rcv[Ether].src)
-        ip = rcv[ARP].psrc
-        print(ip, mac, mac.oui.registration().org)
-        hosts.append([ip, mac])
-
-    return sorted(hosts)
