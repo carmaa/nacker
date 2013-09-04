@@ -27,7 +27,7 @@ import time
 from scapy.all import *
 from pprint import pprint
 
-THREADS = 3
+THREADS = 4
 
 TOPPORTS = [80,     # http
             23,     # telnet
@@ -56,7 +56,6 @@ def synscan(target, portlist = Queue.Queue()):
     for i in range(1, THREADS + 1):
         #if cfg.verbose:
         print('Creating Thread {0}'.format(i))
-
         t = SYNScannerThread(target, portlist, i, open_ports)
         t.setDaemon(True)
         t.start()

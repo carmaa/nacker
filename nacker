@@ -24,7 +24,7 @@ Created on Aug 29, 2013
 '''
 
 from datetime import date
-from caravan import arp, dhcp, icmp, tcp
+from caravan import arp, dhcp, icmp, tcp, platform
 import getopt
 import os
 import sys
@@ -35,9 +35,8 @@ from netaddr import IPNetwork
 
 VERSION = '0.0.1'
 URL = 'http://github.com/carmaa/nacker'
-LOCALHOST_ADDR = ['127.0.0.1', 'localhost']
 PC_MANUFACTURERS = ['Apple', 'Lenovo', 'Dell', 'Hewlett-Packard', 
-                        'Acer' ,'ASUS', 'Fujitsu', 'Sony', 'Toshiba']
+                    'Acer' ,'ASUS', 'Fujitsu', 'Sony', 'Toshiba']
 PRINTER_MANUFACTURERS = ['Xerox', 'Lexmark', 'Rioch', 'Canon', 'Brother']
 
 
@@ -51,10 +50,15 @@ def banner():
     print('')
 
 
+
 def main(argv):
     encoding = sys.getdefaultencoding()
     
     banner()
+
+    # Check if we're root
+    if not platform.is_root():
+        system.exit(1)
     
     # Parse args
     try:
@@ -77,25 +81,25 @@ def main(argv):
     # Main logic goes here
 
     # Get interfaces, ip address and netmask
-    ifaces = netifaces.interfaces()
-    ip_interfaces = []
-    for i in ifaces:
-        try:
-            addresses = netifaces.ifaddresses(i)
-            if addresses[netifaces.AF_INET][0]['addr'] not in LOCALHOST_ADDR:
-                ip_interfaces.append(i)
-        except KeyError:
-            pass
+    iface = platform.ip_interfaces().next()
+    # ip_interfaces = []
+    # for i in ifaces:
+    #     try:
+    #         addresses = netifaces.ifaddresses(i)
+    #         if addresses[netifaces.AF_INET][0]['addr'] not in LOCALHOST_ADDR:
+    #             ip_interfaces.append(i)
+    #     except KeyError:
+    #         pass
     #print(ip_interfaces)
     #ip = socket.gethostbyname(socket.gethostname())
-    interface = ip_interfaces[0]
-    addresses = netifaces.ifaddresses(interface)[netifaces.AF_INET][0]
-    subnet = IPNetwork(addresses['addr'] + '/' + addresses['netmask'])
+    # interface = ip_interfaces[0]
+    # addresses = netifaces.ifaddresses(interface)[netifaces.AF_INET][0]
+    # subnet = IPNetwork(addresses['addr'] + '/' + addresses['netmask'])
     print('Using interface {0} with address {1} and netmask {2}:'.format(
-        interface, subnet.ip, subnet.netmask))
+        iface.name, iface.ip, iface.subnet.netmask))
 
     # Do an ARP ping sweep against the subnet
-    hosts = arp.pingsweep(subnet)
+    hosts = arp.pingsweep(iface.subnet)
 
     # Check if we can ping the hosts, try until first answer or exhausted
     for host in hosts:
@@ -104,15 +108,18 @@ def main(argv):
 
     # Sort the MAC addresses based on organization, laptops anw workstations
     pprint(hosts)
-    hosts.sort(key=lambda host: host[1].oui.registration().org in PC_MANUFACTURERS)
+    hosts.sort(key = lambda host: host[1].oui.registration().org in PC_MANUFACTURERS)
     pprint(hosts)
 
     # Portscan subnet to see if packets are dropped (baseline)
     baseline = tcp.synscan(host[0])
-    pprint(baseline)
+    print('Found {0} open ports:'.format(len(baseline)))
+    for item in baseline:
+        print(item)
 
     # For each MAC address, grab it and ask for an IP
-
+    for ip, mac in hosts:
+        print()
         # Check IP against IP originally associated with MAC - if they are not
         # equal, we're likely authenticated to the switch
 
