@@ -35,6 +35,7 @@ def pingsweep(net):
 
     for snd,rcv in ans:
         mac = netaddr.EUI(rcv[Ether].src)
+        mac.dialect = netaddr.mac_unix
         ip = rcv[ARP].psrc
         print(ip, mac, mac.oui.registration().org)
         hosts.append([ip, mac])

@@ -21,3 +21,13 @@ Created on Aug 29, 2013
 
 @author: Carsten Maartmann-Moe <carsten@carmaa.com> aka ntropy
 '''
+from scapy.all import *
+
+def discover(mac):
+    ether = Ether(src=str(mac), dst='ff:ff:ff:ff:ff:ff')
+    ip = IP(src='0.0.0.0', dst='255.255.255.255')
+    udp = UDP(sport=68,dport=67)
+    bootp = BOOTP(chaddr=RandString(12,'0123456789abcdef'))
+    dhcp = DHCP(options=[('message-type','discover'),'end'])
+    # Send packet
+    sendp(ether / ip / udp / bootp / dhcp)

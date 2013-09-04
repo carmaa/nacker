@@ -48,7 +48,7 @@ def synscan(target, portlist = Queue.Queue()):
     open_ports = []
 
     started = time.time()
-    print('SYN scan started at {0}'.format(time.ctime(started)))
+    print('SYN scan started at {0} {1}'.format(time.ctime(started), time.tzname[0]))
     print(target)
 
     threads = []

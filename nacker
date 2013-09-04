@@ -107,11 +107,11 @@ def main(argv):
             break
 
     # Sort the MAC addresses based on organization, laptops anw workstations
-    pprint(hosts)
+    #pprint(hosts)
     hosts.sort(key = lambda host: host[1].oui.registration().org in PC_MANUFACTURERS)
-    pprint(hosts)
+    #pprint(hosts)
 
-    # Portscan subnet to see if packets are dropped (baseline)
+    # Portscan the first host to see if packets are dropped (baseline)
     baseline = tcp.synscan(host[0])
     print('Found {0} open ports:'.format(len(baseline)))
     for item in baseline:
@@ -119,7 +119,7 @@ def main(argv):
 
     # For each MAC address, grab it and ask for an IP
     for ip, mac in hosts:
-        print()
+        dhcp.discover(mac)
         # Check IP against IP originally associated with MAC - if they are not
         # equal, we're likely authenticated to the switch
 
