@@ -23,8 +23,6 @@ Created on Aug 29, 2013
 @author: Carsten Maartmann-Moe <carsten@carmaa.com> aka ntropy
 '''
 
-from datetime import date
-from caravan import arp, dhcp, icmp, tcp, platform
 import getopt
 import os
 import sys
@@ -32,6 +30,8 @@ import socket
 import netifaces
 from pprint import pprint
 from netaddr import IPNetwork
+from datetime import date
+from caravan import arp, dhcp, icmp, tcp, chassis
 
 VERSION = '0.0.1'
 URL = 'http://github.com/carmaa/nacker'
@@ -57,8 +57,8 @@ def main(argv):
     banner()
 
     # Check if we're root
-    if not platform.is_root():
-        system.exit(1)
+    if not chassis.is_root():
+        sys.exit(1)
     
     # Parse args
     try:
@@ -81,7 +81,7 @@ def main(argv):
     # Main logic goes here
 
     # Get interfaces, ip address and netmask
-    iface = platform.ip_interfaces().next()
+    iface = chassis.ip_interfaces().next()
     # ip_interfaces = []
     # for i in ifaces:
     #     try:
@@ -118,8 +118,14 @@ def main(argv):
         print(item)
 
     # For each MAC address, grab it and ask for an IP
+    
     for ip, mac in hosts:
+        print('Setting mac: {0}'.format(mac))
+        iface.spoof_mac(mac)
         dhcp.discover(mac)
+        break
+        pass
+        #dhcp.discover(mac)
         # Check IP against IP originally associated with MAC - if they are not
         # equal, we're likely authenticated to the switch
 
