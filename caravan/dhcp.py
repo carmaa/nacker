@@ -23,15 +23,14 @@ Created on Aug 29, 2013
 '''
 from scapy.all import *
 
-def discover(mac):
+def discover():
     conf.checkIPaddr = False
     fam,hw = get_if_raw_hwaddr(conf.iface)
-    print(hw)
-    ether = Ether(src=str(mac), dst = 'ff:ff:ff:ff:ff:ff')
+    ether = Ether(dst = 'ff:ff:ff:ff:ff:ff')
     ip = IP(src='0.0.0.0', dst = '255.255.255.255')
     udp = UDP(sport=68, dport=67)
     bootp = BOOTP(chaddr=hw)
     dhcp = DHCP(options = [('message-type','discover'),'end'])
     # Send packet
-    ans, unans = srp1(ether / ip / udp / bootp / dhcp)
-    ans.summarize()
+    ans = srp1(ether / ip / udp / bootp / dhcp, timeout=1)
+    print(ans.summary())

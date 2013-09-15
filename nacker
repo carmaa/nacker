@@ -110,9 +110,17 @@ def main(argv):
         if icmp.ping(host[0]):
             break
 
+    ips = list(iface.subnet.iter_hosts())
+    first = ips.pop(0)
+    last = ips.pop()
+    print('Removing {0} and {1} from target list'.format(first, last))
+    hosts = [h for h in hosts if str(first) not in h]
+    hosts = [h for h in hosts if str(last) not in h]
+
     # Sort the MAC addresses based on organization, laptops anw workstations
-    #pprint(hosts)
+    print('Sorting hosts to targeting printers first, and laptops last')
     hosts.sort(key = lambda host: host[1].oui.registration().org in PC_MANUFACTURERS)
+    hosts.sort(key = lambda host: host[1].oui.registration().org in PRINTER_MANUFACTURERS, reverse=True)
     #pprint(hosts)
 
     # Portscan the first host to see if packets are dropped (baseline)
@@ -130,9 +138,9 @@ def main(argv):
     # For each MAC address, grab it and ask for an IP
     
     for ip, mac in hosts:
-        print('Setting mac: {0}'.format(mac))
+        print('Setting mac: {0} (owned by {1})'.format(mac, ip))
         #iface.spoof_mac(mac)
-        #dhcp.discover(mac)
+        dhcp.discover()
         break
         pass
         #dhcp.discover(mac)
