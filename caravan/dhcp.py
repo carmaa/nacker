@@ -32,5 +32,5 @@ def discover():
     bootp = BOOTP(chaddr=hw)
     dhcp = DHCP(options = [('message-type','discover'),'end'])
     # Send packet
-    ans = srp1(ether / ip / udp / bootp / dhcp, timeout=1)
+    ans = srp1(ether / ip / udp / bootp / dhcp)
     print(ans.summary())

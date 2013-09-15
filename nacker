@@ -125,7 +125,7 @@ def main(argv):
 
     # Portscan the first host to see if packets are dropped (baseline)
     print('Checking if we can communicate on the LAN by portscanning top 10 ports')
-    baseline = tcp.synscan(host[0])
+    baseline = tcp.synscan(hosts[0][0])
     if baseline:
         print('Found {0} open ports:'.format(len(baseline)))
         for item in baseline:
@@ -139,7 +139,7 @@ def main(argv):
     
     for ip, mac in hosts:
         print('Setting mac: {0} (owned by {1})'.format(mac, ip))
-        #iface.spoof_mac(mac)
+        iface.spoof_mac(mac)
         dhcp.discover()
         break
         pass
