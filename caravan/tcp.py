@@ -48,14 +48,13 @@ def synscan(target, portlist = Queue.Queue()):
     open_ports = []
 
     started = time.time()
-    print('SYN scan started at {0} {1}'.format(time.ctime(started), time.tzname[0]))
-    print(target)
+    print('SYN scan of {0} started at {1} {2}'.format(target, time.ctime(started), time.tzname[0]))
 
     threads = []
 
     for i in range(1, THREADS + 1):
         #if cfg.verbose:
-        print('Creating Thread {0}'.format(i))
+        #print('Creating Thread {0}'.format(i))
         t = SYNScannerThread(target, portlist, i, open_ports)
         t.setDaemon(True)
         t.start()
@@ -66,7 +65,7 @@ def synscan(target, portlist = Queue.Queue()):
     for item in threads:
         item.join()
         #if cfg.verbose:
-        print(item.status)
+        #print(item.status)
 
     finished = time.time()
     print('Finished scanning in {0:5f} seconds at {1} {2}'.format((finished-started), time.ctime(finished), time.tzname[0]))

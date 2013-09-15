@@ -81,6 +81,8 @@ def main(argv):
     # Main logic goes here
 
     # Get interfaces, ip address and netmask
+    # TODO: Error handling in the instance there's no interfaces with IP
+    # TODO: Give the option to select interface in the instance of multi-homed
     iface = chassis.ip_interfaces().next()
     # ip_interfaces = []
     # for i in ifaces:
@@ -99,7 +101,9 @@ def main(argv):
         iface.name, iface.ip, iface.subnet.netmask))
 
     # Do an ARP ping sweep against the subnet
+    print('Performing an ARP ping sweep of the LAN')
     hosts = arp.pingsweep(iface.subnet)
+    print('{0} live hosts found'.format(len(hosts)))
 
     # Check if we can ping the hosts, try until first answer or exhausted
     for host in hosts:
@@ -112,17 +116,23 @@ def main(argv):
     #pprint(hosts)
 
     # Portscan the first host to see if packets are dropped (baseline)
+    print('Checking if we can communicate on the LAN by portscanning top 10 ports')
     baseline = tcp.synscan(host[0])
-    print('Found {0} open ports:'.format(len(baseline)))
-    for item in baseline:
-        print(item)
+    if baseline:
+        print('Found {0} open ports:'.format(len(baseline)))
+        for item in baseline:
+            print(item)
+        print('Are you sure you are on a LAN that is protected by NAC?')
+        sys.exit(-1)
+    else:
+        print('No open ports found. Looks like you are on a NACed LAN. Let\'s roll')
 
     # For each MAC address, grab it and ask for an IP
     
     for ip, mac in hosts:
         print('Setting mac: {0}'.format(mac))
-        iface.spoof_mac(mac)
-        dhcp.discover(mac)
+        #iface.spoof_mac(mac)
+        #dhcp.discover(mac)
         break
         pass
         #dhcp.discover(mac)
