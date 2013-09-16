@@ -26,6 +26,7 @@ import os
 import subprocess
 import netifaces
 import netaddr
+from subprocess import call
 
 LOCALHOST_ADDR = ['127.0.0.1', 'localhost']
 
@@ -86,3 +87,9 @@ class Interface():
             '''Sets the new mac for the interface on a Darwin system'''
             subprocess.check_call(['ifconfig','%s' % self.name,'up'])
             subprocess.check_call(['ifconfig','%s' % self.name,'lladdr','%s' % mac])
+    
+    def dhcp(self):
+        if is_linux():
+            call(['dhclient', self.name])
+        else:
+            call(['ipconfig', 'set', self.name, 'DHCP'])

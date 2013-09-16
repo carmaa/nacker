@@ -32,6 +32,7 @@ from pprint import pprint
 from netaddr import IPNetwork
 from datetime import date
 from caravan import arp, dhcp, icmp, tcp, chassis
+from scapy.all import *
 
 VERSION = '0.0.1'
 URL = 'http://github.com/carmaa/nacker'
@@ -104,7 +105,7 @@ def main(argv):
     hosts = [h for h in hosts if str(first) not in h]
     hosts = [h for h in hosts if str(last) not in h]
 
-    # Sort the MAC addresses based on organization, laptops anw workstations
+    # Sort the MAC addresses based on organization, laptops and workstations
     print('Sorting hosts to targeting printers first, and laptops last')
     hosts.sort(key = lambda host: host[1].oui.registration().org in PC_MANUFACTURERS)
     hosts.sort(key = lambda host: host[1].oui.registration().org in PRINTER_MANUFACTURERS, reverse=True)
@@ -126,8 +127,10 @@ def main(argv):
     
     for ip, mac in hosts:
         print('Setting mac: {0} (owned by {1})'.format(mac, ip))
-        #iface.spoof_mac(mac)
-        dhcp.discover()
+        iface.spoof_mac(mac)
+        #dhcpoffer = dhcp.discover()
+        #dhcpack = dhcp.request(dhcpoffer)
+        iface.dhcp()
         break
         pass
         #dhcp.discover(mac)

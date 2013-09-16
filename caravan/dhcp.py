@@ -23,6 +23,12 @@ Created on Aug 29, 2013
 '''
 from scapy.all import *
 
+MESSAGE_TYPE_OFFER = 2
+MESSAGE_TYPE_REQUEST = 3
+MESSAGE_TYPE_ACK = 5
+MESSAGE_TYPE_NAK = 6
+MESSAGE_TYPE_RELEASE = 7
+
 def discover():
     conf.checkIPaddr = False
     fam,hw = get_if_raw_hwaddr(conf.iface)
@@ -33,4 +39,22 @@ def discover():
     dhcp = DHCP(options = [('message-type','discover'),'end'])
     # Send packet
     ans = srp1(ether / ip / udp / bootp / dhcp)
-    print(ans.summary())
+    mtype = ans[DHCP].options[0][1]
+    if mtype == MESSAGE_TYPE_OFFER:
+        print('DHCP offer received for IP {0}'.format(ans[BOOTP].yiaddr))
+    return ans
+
+def request(pkt):
+    conf.checkIPaddr = False
+    #fam,hw = get_if_raw_hwaddr(conf.iface)
+    ether = Ether(dst = 'ff:ff:ff:ff:ff:ff')
+    ip = IP(src='0.0.0.0', dst = '255.255.255.255')
+    udp = UDP(sport=68, dport=67)
+    bootp = BOOTP(chaddr=pkt[BOOTP].chaddr, siaddr=pkt[BOOTP].siaddr, xid=pkt[BOOTP].xid)
+    dhcp = DHCP(options = [('message-type','request'),('requested_addr',pkt[BOOTP].yiaddr),'end'])
+    # Send packet
+    ans = srp1(ether / ip / udp / bootp / dhcp)
+    mtype = ans[DHCP].options[0][1]
+    if mtype == MESSAGE_TYPE_ACK:
+        print('DHCP acknowledgement received for IP {0}'.format(ans[BOOTP].yiaddr))
+    return ans
