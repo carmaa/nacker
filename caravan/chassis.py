@@ -64,6 +64,9 @@ class Interface():
         self.ip = None
         self.subnet = None
         self.netmask = None
+        self.get_netaddr()
+    
+    def get_netaddr(self):
         try:
             self.ifaddresses = netifaces.ifaddresses(self.name)[netifaces.AF_INET][0]
             self.ip = netaddr.IPAddress(self.ifaddresses['addr'])
@@ -71,7 +74,7 @@ class Interface():
             self.subnet = netaddr.IPNetwork('{0}/{1}'.format(self.ip, self.netmask))
         except KeyError:
             pass
-    
+
     def has_ip(self):
         return self.ip
 
@@ -93,3 +96,4 @@ class Interface():
             call(['dhclient', self.name])
         else:
             call(['ipconfig', 'set', self.name, 'DHCP'])
+        self.get_netaddr()

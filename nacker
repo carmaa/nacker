@@ -87,6 +87,7 @@ def main(argv):
     iface = chassis.ip_interfaces().next()
     print('Using interface {0} with address {1} and netmask {2}:'.format(
         iface.name, iface.ip, iface.subnet.netmask))
+    original_ip = iface.ip
 
     # Do an ARP ping sweep against the subnet
     print('Performing an ARP ping sweep of the LAN')
@@ -113,15 +114,16 @@ def main(argv):
 
     # Portscan the first host to see if packets are dropped (baseline)
     print('Checking if we can communicate on the LAN by portscanning top 10 ports')
-    baseline = tcp.synscan(hosts[0][0])
-    if baseline:
+    baseline_tcp = tcp.synscan(hosts[0][0])
+    if baseline_tcp:
         print('Found {0} open ports:'.format(len(baseline)))
-        for item in baseline:
+        for item in baseline_tcp:
             print(item)
         print('Are you sure you are on a LAN that is protected by NAC?')
         sys.exit(-1)
     else:
         print('No open ports found. Looks like you are on a NACed LAN. Let\'s roll')
+    baseline_icmp = icmp.ping('google.com')
 
     # For each MAC address, grab it and ask for an IP
     
@@ -131,6 +133,8 @@ def main(argv):
         #dhcpoffer = dhcp.discover()
         #dhcpack = dhcp.request(dhcpoffer)
         iface.dhcp()
+        if iface.ip != original_ip:
+            print('IP changed')
         break
         pass
         #dhcp.discover(mac)
