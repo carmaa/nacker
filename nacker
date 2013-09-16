@@ -84,19 +84,6 @@ def main(argv):
     # TODO: Error handling in the instance there's no interfaces with IP
     # TODO: Give the option to select interface in the instance of multi-homed
     iface = chassis.ip_interfaces().next()
-    # ip_interfaces = []
-    # for i in ifaces:
-    #     try:
-    #         addresses = netifaces.ifaddresses(i)
-    #         if addresses[netifaces.AF_INET][0]['addr'] not in LOCALHOST_ADDR:
-    #             ip_interfaces.append(i)
-    #     except KeyError:
-    #         pass
-    #print(ip_interfaces)
-    #ip = socket.gethostbyname(socket.gethostname())
-    # interface = ip_interfaces[0]
-    # addresses = netifaces.ifaddresses(interface)[netifaces.AF_INET][0]
-    # subnet = IPNetwork(addresses['addr'] + '/' + addresses['netmask'])
     print('Using interface {0} with address {1} and netmask {2}:'.format(
         iface.name, iface.ip, iface.subnet.netmask))
 
@@ -139,7 +126,7 @@ def main(argv):
     
     for ip, mac in hosts:
         print('Setting mac: {0} (owned by {1})'.format(mac, ip))
-        iface.spoof_mac(mac)
+        #iface.spoof_mac(mac)
         dhcp.discover()
         break
         pass
