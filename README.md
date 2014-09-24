@@ -5,7 +5,7 @@ Nacker is a tool to bypass 802.1x Network Access Control (NAC) on a wired LAN. N
 
 The name "Nacker" is a derived from the word "knocker" and NAC; coincidentally combining them equals the slang for [Irish gypsy][1]. D'ya like dags?
 
-I,portant note
+Important note
 --------------
 This tool is currently in a non-working state.
 
